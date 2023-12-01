@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ModMetaData>
+	<name>VPE Auto Cast Buffs</name>
+	<author>NetzachSloth</author>
+	<packageId>NetzachSloth.VPEAutoCastBuffs</packageId>
+	<supportedVersions>
+		<li>1.4</li>
+	</supportedVersions>
+	<description>Some changes to Vanilla Psycasts Expanded to reduce Micro Management and add functional autocasts.
+
+		Only autocasts above 50% psyfocus, not yet configurable.
+
+		Steal Vitality
+			Auto move to target.
+			Add sensitivity scaling.
+			~Scaling set to caster sensitivity.~
+			Show undrafted.
+			Autocasts in this order, Prisoner, Slave, Colonist
+		Psychic Guidance
+			Auto move to target.
+			~Scaling set to caster sensitivity.~
+			Autocasts on colonists.
+
+		If there's any more you think I should add, let me know.
+
+		Haven't tested much for performance impact, but there shouldn't be too much. This only does its thing every 600 ticks. It checks all colony pawns for abilities, checks for valid targets, then schedules the cast job.
+	</description>
+	<modDependencies>
+		<li>
+			<packageId>VanillaExpanded.VPsycastsE</packageId>
+			<displayName>Vanilla Psycasts Expanded</displayName>
+			<steamWorkshopUrl>steam://url/CommunityFilePage/2842502659</steamWorkshopUrl>
+		</li>
+	</modDependencies>
+	<loadAfter>
+		<li>brrainz.harmony</li>
+		<li>VanillaExpanded.VPsycastsE</li>
+	</loadAfter>
+</ModMetaData>
