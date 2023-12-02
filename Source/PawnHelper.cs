@@ -67,7 +67,10 @@ namespace VPEAutoCastBuffs
 
         public static bool PawnIsDown(Pawn pawn)
         {
-            return pawn.CurJobDef == JobDefOf.LayDown || pawn.jobs.curDriver.asleep || pawn.Downed;
+            return pawn == null ||
+                   pawn.CurJobDef == JobDefOf.LayDown ||
+                   (pawn.jobs?.curDriver?.asleep == true) ||
+                   pawn.Downed;
         }
 
         public static List<Pawn> GetPawnsInRange(Pawn referencePawn, float range)
