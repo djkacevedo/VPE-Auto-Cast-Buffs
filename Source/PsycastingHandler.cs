@@ -16,7 +16,7 @@ namespace VPEAutoCastBuffs
 {
     public static class PsycastingHandler
     {
-        public static Dictionary<string, Func<Pawn, Ability, bool>> abilityHandlers 
+        public static Dictionary<string, Func<Pawn, Ability, bool>> undraftedAbilityHandlers
             = new Dictionary<string, Func<Pawn, Ability, bool>>
                 {
                     { "VPE_StealVitality", HandleStealVitality },
@@ -31,14 +31,45 @@ namespace VPEAutoCastBuffs
                     { "VPE_Darkvision", HandleDarkVision }
                 };
 
+        public static Dictionary<string, Func<Pawn, Ability, bool>> draftedAbilityHandlers
+            = new Dictionary<string, Func<Pawn, Ability, bool>>
+        {
+                    { "VPE_SpeedBoost", HandleSelfBuff },
+                    { "VPE_BladeFocus", HandleSelfBuff },
+                    { "VPE_FiringFocus", HandleSelfBuff },
+                    { "VPE_AdrenalineRush", HandleSelfBuff },
+                    { "VPE_ControlledFrenzy", HandleSelfBuff },
+                    { "VPE_GuidedShot", HandleSelfBuff }
+        };
+
         public static bool HandleAbilityUndrafted(Pawn __instance, Ability ability)
         {
-            if (abilityHandlers.TryGetValue(ability.def.defName, out var handler))
+            if (undraftedAbilityHandlers.TryGetValue(ability.def.defName, out var handler))
             {
                 return handler(__instance, ability);
             }
 
             return false;
+        }
+
+        public static bool HandleAbilityDrafted(Pawn __instance, Ability ability)
+        {
+            if (draftedAbilityHandlers.TryGetValue(ability.def.defName, out var handler))
+            {
+                return handler(__instance, ability);
+            }
+
+            return false;
+        }
+
+        public static bool HandleSelfBuff(Pawn __instance, Ability ability)
+        {
+            // note, this method only works right if the buff hediff defName and the ability hediff defName are the same
+            if (!PawnHasHediff(__instance, ability.def.defName))
+            {
+                return CastAbilityOnTarget(ability, __instance);
+            }
+            else return false;
         }
 
         public static bool HandleStealVitality(Pawn __instance, Ability ability)
@@ -62,7 +93,6 @@ namespace VPEAutoCastBuffs
 
             return eligiblePawns.FirstOrDefault() is Pawn target && CastAbilityOnTarget(ability, target);
         }
-
 
         public static bool HandleDarkVision(Pawn __instance, Ability ability)
         {

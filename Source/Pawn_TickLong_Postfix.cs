@@ -19,23 +19,34 @@ namespace VPEAutoCastBuffs
         [HarmonyPostfix]
         public static void Postfix(Pawn __instance)
         {
-            if (Find.TickManager.TicksGame % 600 == 0 && !__instance.Drafted)
+            var ticksGame = Find.TickManager.TicksGame;
+
+            if (ticksGame % 600 == 0 && !__instance.Drafted)
             {
-                if (!__instance.IsColonistPlayerControlled) return;
+                ProcessAbilities(__instance, 0.5f, PsycastingHandler.HandleAbilityUndrafted);
+            }
+            else if (ticksGame % 30 == 0 && __instance.Drafted)
+            {
+                ProcessAbilities(__instance, 0.0f, PsycastingHandler.HandleAbilityDrafted);
+            }
+        }
 
-                if (!PawnHelper.PawnCanCast(__instance)) return;
+        private static void ProcessAbilities(Pawn pawn, float castThreshold, Func<Pawn, Ability, bool> handleAbility)
+        {
+            if (!pawn.IsColonistPlayerControlled) return;
+            if (!PawnHelper.PawnCanCast(pawn, castThreshold)) return;
 
-                List<Ability> abilities = __instance.GetComp<CompAbilities>()?.LearnedAbilities;
-                if (abilities == null) return;
+            List<Ability> abilities = pawn.GetComp<CompAbilities>()?.LearnedAbilities;
+            if (abilities == null) return;
 
-                foreach (Ability ability in abilities)
+            foreach (Ability ability in abilities)
+            {
+                if (ability.IsEnabledForPawn(out _) && ability.autoCast && handleAbility(pawn, ability))
                 {
-                    if (ability.autoCast && PsycastingHandler.HandleAbilityUndrafted(__instance, ability))
-                    {
-                        return;
-                    }
+                    return;
                 }
             }
         }
+
     }
 }

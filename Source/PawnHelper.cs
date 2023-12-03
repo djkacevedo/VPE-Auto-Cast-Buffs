@@ -80,15 +80,16 @@ namespace VPEAutoCastBuffs
                                (pawn.Position - referencePawn.Position).LengthHorizontal <= range);
         }
 
-        public static bool PawnCanCast(Pawn pawn)
+        public static bool PawnCanCast(Pawn pawn, float psyFocusLimit)
         {
             return pawn != null &&
                    pawn.CurJobDef != JobDefOf.LayDown &&
                    !pawn.Downed &&
                    pawn.HasPsylink &&
-                   pawn.psychicEntropy.CurrentPsyfocus >= 0.5f &&
+                   pawn.psychicEntropy.CurrentPsyfocus >= psyFocusLimit &&
                    pawn.jobs?.curDriver?.asleep == false &&
-                   pawn.CurJob?.def.defName != "VFEA_GotoTargetAndUseAbility";
+                   pawn.CurJob?.def.defName != "VFEA_GotoTargetAndUseAbility" &&
+                   pawn.CurJob?.def.defName != "VFEA_UseAbility";
         }
 
         public static IEnumerable<Pawn> GetPawnsWithDamagedEquipment(IEnumerable<Pawn> pawns)
