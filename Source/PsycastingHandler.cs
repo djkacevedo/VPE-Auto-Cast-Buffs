@@ -45,7 +45,7 @@ namespace VPEAutoCastBuffs
         {
             if (PawnHasHediff(__instance, "VPE_GainedVitality")) return false;
 
-            List<Pawn> pawnsInRange = GetPawnsInRange(__instance, ability.GetRangeForPawn());
+            IEnumerable<Pawn> pawnsInRange = GetPawnsInRange(__instance, ability.GetRangeForPawn());
 
             return
                 CastAbilityOnTarget(ability, GetHighestSensitivity(GetPrisoners(pawnsInRange))) ||
@@ -56,10 +56,9 @@ namespace VPEAutoCastBuffs
         public static bool HandlePsychicGuidance(Pawn __instance, Ability ability)
         {
             float range = ability.GetRangeForPawn();
-            List<Pawn> pawnsInRange = GetPawnsInRange(__instance, range);
-            List<Pawn> eligiblePawns = GetColonists(GetPawnsNotDown(pawnsInRange))
-                                       .Where(pawn => !PawnHasHediff(pawn, "VPE_PsychicGuidance"))
-                                       .ToList();
+            IEnumerable<Pawn> pawnsInRange = GetPawnsInRange(__instance, range);
+            IEnumerable<Pawn> eligiblePawns = GetColonists(GetPawnsNotDown(pawnsInRange))
+                                       .Where(pawn => !PawnHasHediff(pawn, "VPE_PsychicGuidance"));
 
             return eligiblePawns.FirstOrDefault() is Pawn target && CastAbilityOnTarget(ability, target);
         }
@@ -91,7 +90,7 @@ namespace VPEAutoCastBuffs
                 return false;
             }
 
-            List<Pawn> pawnsInRange = GetPawnsInRange(__instance, ability.GetRangeForPawn());
+            IEnumerable<Pawn> pawnsInRange = GetPawnsInRange(__instance, ability.GetRangeForPawn());
             Pawn target = GetPrisoners(pawnsInRange).FirstOrDefault() ?? GetSlaves(pawnsInRange).FirstOrDefault();
 
             return target != null && CastAbilityOnTarget(ability, target);
@@ -100,9 +99,9 @@ namespace VPEAutoCastBuffs
         public static bool HandleWoS(Pawn __instance, Ability ability)
         {
             float range = ability.GetRangeForPawn();
-            List<Pawn> pawnsInRange = GetPawnsInRange(__instance, range);
-            List<Pawn> pawnsWithMentalBreak = GetPawnsWithMentalBreak(pawnsInRange);
-            List<Pawn> notDownColonists = GetColonists(GetPawnsNotDown(pawnsWithMentalBreak));
+            IEnumerable<Pawn> pawnsInRange = GetPawnsInRange(__instance, range);
+            IEnumerable<Pawn> pawnsWithMentalBreak = GetPawnsWithMentalBreak(pawnsInRange);
+            IEnumerable<Pawn> notDownColonists = GetColonists(GetPawnsNotDown(pawnsWithMentalBreak));
 
             Pawn target = notDownColonists.FirstOrDefault();
             return target != null && CastAbilityOnTarget(ability, target);
@@ -111,9 +110,9 @@ namespace VPEAutoCastBuffs
         public static bool HandleWoP(Pawn __instance, Ability ability)
         {
             float range = ability.GetRangeForPawn();
-            List<Pawn> pawnsInRange = GetPawnsInRange(__instance, range);
-            List<Pawn> pawnsWithoutHediff = GetPawnsWithoutHediff(pawnsInRange, "VPE_Productivity");
-            List<Pawn> eligibleColonists = GetColonists(GetPawnsNotDown(pawnsWithoutHediff));
+            IEnumerable<Pawn> pawnsInRange = GetPawnsInRange(__instance, range);
+            IEnumerable<Pawn> pawnsWithoutHediff = GetPawnsWithoutHediff(pawnsInRange, "VPE_Productivity");
+            IEnumerable<Pawn> eligibleColonists = GetColonists(GetPawnsNotDown(pawnsWithoutHediff));
 
             Pawn target = eligibleColonists.FirstOrDefault();
             return target != null && CastAbilityOnTarget(ability, target);
@@ -123,10 +122,10 @@ namespace VPEAutoCastBuffs
         public static bool HandleWoJ(Pawn __instance, Ability ability)
         {
             float range = ability.GetRangeForPawn();
-            List<Pawn> pawnsInRange = GetPawnsInRange(__instance, range);
-            List<Pawn> pawnsWithoutHediff = GetPawnsWithoutHediff(pawnsInRange, "Joyfuzz");
-            List<Pawn> notDownColonists = GetColonists(GetPawnsNotDown(pawnsWithoutHediff));
-            List<Pawn> lowJoyPawns = GetLowJoyPawns(notDownColonists);
+            IEnumerable<Pawn> pawnsInRange = GetPawnsInRange(__instance, range);
+            IEnumerable<Pawn> pawnsWithoutHediff = GetPawnsWithoutHediff(pawnsInRange, "Joyfuzz");
+            IEnumerable<Pawn> notDownColonists = GetColonists(GetPawnsNotDown(pawnsWithoutHediff));
+            IEnumerable<Pawn> lowJoyPawns = GetLowJoyPawns(notDownColonists);
 
             Pawn target = lowJoyPawns.FirstOrDefault();
             return target != null && CastAbilityOnTarget(ability, target);
@@ -141,9 +140,9 @@ namespace VPEAutoCastBuffs
         private static bool HandleMendByPawn(Pawn __instance, Ability ability)
         {
             float range = ability.GetRangeForPawn();
-            List<Pawn> pawnsInRange = GetPawnsInRange(__instance, range);
-            List<Pawn> colonistPawns = GetColonists(pawnsInRange);
-            List<Pawn> pawnsWithDamagedEquipment = GetPawnsWithDamagedEquipment(colonistPawns);
+            IEnumerable<Pawn> pawnsInRange = GetPawnsInRange(__instance, range);
+            IEnumerable<Pawn> colonistPawns = GetColonists(pawnsInRange);
+            IEnumerable<Pawn> pawnsWithDamagedEquipment = GetPawnsWithDamagedEquipment(colonistPawns);
 
             Pawn target = pawnsWithDamagedEquipment.FirstOrDefault();
             return target != null && CastAbilityOnTarget(ability, target);
@@ -153,8 +152,8 @@ namespace VPEAutoCastBuffs
             IEnumerable<Thing> thingsInStockpile = GetThingsInNamedStockpile(__instance.Map, "mend");
             Thing target = thingsInStockpile
                             .Where(thing => thing.HitPoints < thing.MaxHitPoints * 0.99)
-                            .OrderByDescending(thing => thing.HitPoints / (float)thing.MaxHitPoints)
-                            .LastOrDefault();
+                            .OrderBy(thing => thing.HitPoints / (float)thing.MaxHitPoints)
+                            .FirstOrDefault();
 
             return target != null && CastAbilityOnTarget(ability, target);
         }

@@ -14,24 +14,15 @@ using System.Linq;
 namespace VPEAutoCastBuffs
 {
     [HarmonyPatch(typeof(Pawn), "Tick")]
-    public static class PawnOnTickPostFix
+    public static class Pawn_Tick_Postfix
     {
         [HarmonyPostfix]
         public static void Postfix(Pawn __instance)
         {
-            if (!__instance.IsColonistPlayerControlled) return;
-
-            int ticksGame = Find.TickManager.TicksGame;
-
-            if (__instance.Drafted)
+            if (Find.TickManager.TicksGame % 600 == 0 && !__instance.Drafted)
             {
-                if (ticksGame % 30 == 0)
-                {
-                    // Add logic for drafted pawns here
-                }
-            }
-            else if (ticksGame % 600 == 0)
-            {
+                if (!__instance.IsColonistPlayerControlled) return;
+
                 if (!PawnHelper.PawnCanCast(__instance)) return;
 
                 List<Ability> abilities = __instance.GetComp<CompAbilities>()?.LearnedAbilities;

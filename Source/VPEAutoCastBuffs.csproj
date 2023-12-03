@@ -54,7 +54,7 @@
     <Compile Include="Ability_CanAutoCast_Patch.cs" />
     <Compile Include="EndCurrentJob_Postfix.cs" />
     <Compile Include="PawnHelper.cs" />
-    <Compile Include="PawnOnTickPostFix.cs" />
+    <Compile Include="Pawn_TickLong_Postfix.cs" />
     <Compile Include="PsycastingHandler.cs" />
     <Compile Include="ThingHelper.cs" />
     <Compile Include="TryGetAttackVerb_Patch.cs" />

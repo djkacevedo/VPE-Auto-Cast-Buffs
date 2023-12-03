@@ -34,24 +34,14 @@ namespace VPEAutoCastBuffs
             return biocodeComp != null && biocodeComp.Biocoded;
         }
         
-        public static List<Thing> GetThingsInNamedStockpile(Map map, string stockpileName)
+        public static IEnumerable<Thing> GetThingsInNamedStockpile(Map map, string stockpileName)
         {
-            List<Thing> items = new List<Thing>();
-
             if (map == null || string.IsNullOrEmpty(stockpileName))
             {
-                return items; // Return empty list if pawn is not on a map or stockpileName is null/empty
+                return new List<Thing>(); // Return empty list if pawn is not on a map or stockpileName is null/empty
             }
 
-            foreach (var thing in map.listerThings.AllThings)
-            {
-                if ((thing.def.IsWeapon || thing.def.IsApparel) && ThingInNamedStockpile(thing, stockpileName))
-                {
-                    items.Add(thing);
-                }
-            }
-
-            return items;
+            return map.listerThings.AllThings.Where(thing => (thing.def.IsWeapon || thing.def.IsApparel) && ThingInNamedStockpile(thing, stockpileName));
         }
 
         public static bool ThingInNamedStockpile(Thing thing, string stockpileName)
