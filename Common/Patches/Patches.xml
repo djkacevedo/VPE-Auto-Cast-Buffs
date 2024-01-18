@@ -167,4 +167,36 @@
 			</VFECore.Abilities.AbilityDef>
 		</value>
 	</Operation>
+	<Operation Class="PatchOperationReplace">
+		<success>Always</success>
+		<xpath>/Defs/VFECore.Abilities.AbilityDef[defName=&quot;VPE_SpeedBoost&quot;]</xpath>
+		<value>
+			<VFECore.Abilities.AbilityDef ParentName="VPE_PsycastBase">
+				<defName>VPE_SpeedBoost</defName>
+				<label>speedboost</label>
+				<description>Psychically augments the muscle fibers, ligaments and joints in the caster’s legs, tripling their movement speed for roughly two minutes depending on their psychic sensitivity.</description>
+				<iconPath>Abilities/Warlord/SpeedBoost</iconPath>
+				<targetMode>Self</targetMode>
+				<castTime>15</castTime>
+				<showUndrafted>true</showUndrafted>
+				<durationTime>7200</durationTime>
+				<abilityClass>VFECore.Abilities.Ability_Blank</abilityClass>
+				<castSound>VPE_Speedboost_Cast</castSound>
+				<modExtensions>
+					<li Class="VanillaPsycastsExpanded.AbilityExtension_Psycast">
+						<path>VPE_Warlord</path>
+						<level>1</level>
+						<order>1</order>
+						<psyfocusCost>0.12</psyfocusCost>
+						<entropyGain>12</entropyGain>
+						<psychic>true</psychic>
+					</li>
+					<li Class="VFECore.Abilities.AbilityExtension_Hediff">
+						<hediff>VPE_SpeedBoost</hediff>
+						<durationMultiplier>PsychicSensitivity</durationMultiplier>
+					</li>
+				</modExtensions>
+			</VFECore.Abilities.AbilityDef>
+		</value>
+	</Operation>
 </Patch>

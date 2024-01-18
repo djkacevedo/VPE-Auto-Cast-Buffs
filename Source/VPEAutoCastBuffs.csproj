@@ -57,7 +57,7 @@
     <Compile Include="Pawn_TickLong_Postfix.cs" />
     <Compile Include="PsycastingHandler.cs" />
     <Compile Include="ThingHelper.cs" />
-    <Compile Include="TryGetAttackVerb_Patch.cs" />
+    <Compile Include="Pawn_TryGetAttackVerb_Postfix.cs" />
     <Compile Include="VPEAutoCastBuffs.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WeatherHelper.cs" />

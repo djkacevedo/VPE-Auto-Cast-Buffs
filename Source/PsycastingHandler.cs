@@ -19,6 +19,7 @@ namespace VPEAutoCastBuffs
         public static Dictionary<string, Func<Pawn, Ability, bool>> undraftedAbilityHandlers
             = new Dictionary<string, Func<Pawn, Ability, bool>>
                 {
+                    { "VPE_SpeedBoost", HandleSelfBuff },
                     { "VPE_StealVitality", HandleStealVitality },
                     { "VPEP_BrainLeech", HandleBrainLeech },
                     { "VPE_PsychicGuidance", HandlePsychicGuidance },
