@@ -1,9 +1,6 @@
 ﻿using RimWorld;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Verse;
 
 namespace VPEAutoCastBuffs
@@ -33,12 +30,12 @@ namespace VPEAutoCastBuffs
             // Check if the component exists and the item is biocoded
             return biocodeComp != null && biocodeComp.Biocoded;
         }
-        
+
         public static IEnumerable<Thing> GetThingsInNamedStockpile(Map map, string stockpileName)
         {
             if (map == null || string.IsNullOrEmpty(stockpileName))
             {
-                return new List<Thing>(); // Return empty list if pawn is not on a map or stockpileName is null/empty
+                return Enumerable.Empty<Thing>(); // Return empty list if pawn is not on a map or stockpileName is null/empty
             }
 
             return map.listerThings.AllThings.Where(thing => (thing.def.IsWeapon || thing.def.IsApparel) && ThingInNamedStockpile(thing, stockpileName));
@@ -50,6 +47,5 @@ namespace VPEAutoCastBuffs
             Zone zone = thing.Position.GetZone(thing.Map);
             return zone is Zone_Stockpile && zone.label.ToLower().Contains(stockpileName.ToLower());
         }
-
     }
 }

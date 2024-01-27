@@ -3,14 +3,14 @@ using RimWorld.Planet;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Verse;
-using static UnityEngine.GraphicsBuffer;
 using Ability = VFECore.Abilities.Ability;
 using static VPEAutoCastBuffs.PawnHelper;
 using static VPEAutoCastBuffs.WeatherHelper;
 using static VPEAutoCastBuffs.ThingHelper;
+using HarmonyLib;
+using VanillaPsycastsExpanded.Technomancer;
+using Verse.AI;
 
 namespace VPEAutoCastBuffs
 {
@@ -108,7 +108,6 @@ namespace VPEAutoCastBuffs
             return target != null && CastAbilityOnTarget(ability, target);
         }
 
-
         public static bool HandleEclipse(Pawn __instance, Ability ability)
         {
             return !EclipseOnMap(__instance.Map) && CastAbilityOnTarget(ability, __instance);
@@ -149,7 +148,6 @@ namespace VPEAutoCastBuffs
             return target != null && CastAbilityOnTarget(ability, target);
         }
 
-
         public static bool HandleWoJ(Pawn __instance, Ability ability)
         {
             float range = ability.GetRangeForPawn();
@@ -161,7 +159,6 @@ namespace VPEAutoCastBuffs
             Pawn target = lowJoyPawns.FirstOrDefault();
             return target != null && CastAbilityOnTarget(ability, target);
         }
-
 
         public static bool HandleMend(Pawn __instance, Ability ability)
         {
@@ -178,21 +175,33 @@ namespace VPEAutoCastBuffs
             Pawn target = pawnsWithDamagedEquipment.FirstOrDefault();
             return target != null && CastAbilityOnTarget(ability, target);
         }
+
         private static bool HandleMendByZone(Pawn __instance, Ability ability)
         {
             IEnumerable<Thing> thingsInStockpile = GetThingsInNamedStockpile(__instance.Map, "mend");
-            Thing target = thingsInStockpile
-                            .Where(thing => thing.HitPoints < thing.MaxHitPoints * 0.99)
-                            .OrderBy(thing => thing.HitPoints / (float)thing.MaxHitPoints)
-                            .FirstOrDefault();
+            thingsInStockpile
+                .Where(thing => thing.HitPoints < thing.MaxHitPoints)
+                // Avoid several psychic pawns targetting the same item (and wasting their power)
+                // pick a random valid element, generally preferring the less damaged (and thus closest-to-being-done) ones
+                .TryRandomElementByWeight(thing => (float)thing.HitPoints / thing.MaxHitPoints, out Thing target);
 
             return target != null && CastAbilityOnTarget(ability, target);
         }
 
         public static bool HandleEnchant(Pawn __instance, Ability ability)
         {
-            var target = GetThingsInNamedStockpile(__instance.Map, "enchant")
-                         .FirstOrDefault(thing => thing.TryGetQuality(out var quality) && quality < QualityCategory.Good);
+            QualityCategory maxQuality = (QualityCategory)(int)ability.GetPowerForPawn();
+
+            GetThingsInNamedStockpile(__instance.Map, "enchant")
+                .Where(thing => thing.TryGetQuality(out var quality) && quality < maxQuality)
+                // Avoid several psychic pawns targetting the same item (and wasting their power)
+                // pick a random valid element, generally preferring the higher-quality (and thus closest-to-being-done) ones
+                .TryRandomElementByWeight(thing =>
+                {
+                    thing.TryGetQuality(out var quality);
+                    return (1f + (float)quality);
+                },
+                out Thing target);
 
             return target != null && CastAbilityOnTarget(ability, target);
         }
